@@ -36,10 +36,10 @@ def test_matches(matches, non_matches, match_fn):
     """
     print('------\nTesting matches for %s...' % match_fn.__name__)
     success = True
-    for user_input, info in matches:
+    for user_input, expected_info in matches:
         result = match_fn(user_input)
         s1 = assertion(result.match, True, user_input.text)
-        s2 = assertion(info, result.info, user_input.text)
+        s2 = assertion(result.info, expected_info, user_input.text)
         if not s1 or not s2:
             success = False
     for user_input in non_matches:

@@ -186,7 +186,7 @@ def match_where_are_you_from_response(user_input):
 def match_how_old_are_you_response(user_input):
     """Match user input pattern for task 1.5.
 
-    PATTERN MATCHED:
+    PATTERN MATCHES:
     BOT: How old are you?
     USR: [options]
     I am {age} years old
@@ -211,7 +211,7 @@ def match_how_old_are_you_response(user_input):
     """
     r = r'^' \
         r"(I am |I'm )?" \
-        r"%s" % common_regex.AGE + \
+        r"%s" % common_regex.NUMBER + \
         r"( years old)?" \
         r'(.)?' \
         r'$'
@@ -219,10 +219,9 @@ def match_how_old_are_you_response(user_input):
     info = None
     pattern_match = re.match(r, user_input.text)
     if pattern_match:
-        info = pattern_match.group('age')
-        age_tok = NLP(info)[0]
-        if age_tok.tag_ in pos.NUMBER:
-            match = True
+        info = pattern_match.group('number')
+        age_match = common_regex.match_number(NLP(info))
+        match = age_match.match
     return models.Match(user_input, match, info)
 
 
