@@ -28,7 +28,10 @@ def goal(number):
     goals = {
         1: match_name,
         2: match_nice_to_meet_you,
-        3: match_how_are_you_response}
+        3: match_how_are_you_response,
+        4: match_where_are_you_from_response,
+        5: match_how_old_are_you_response,
+        6: match_what_grade_are_you_in_response}
     if number not in goals.keys():
         raise errors.InvalidKeyError(number, goals.keys())
     return goals[number]
@@ -60,7 +63,7 @@ def match_name(user_input):
       user_input: the user input (SpaCy doc)
 
     Returns:
-      Match object.
+      models.Match object.
     """
     regexs = [
         r"^My name's %s(.)?$" % common_regex.NAME,
@@ -95,7 +98,7 @@ def match_nice_to_meet_you(user_input):
       user_input: the user input (SpaCy doc).
 
     Returns:
-      Match object.
+      models.Match object.
     """
     r = r'^Nice to meet you, too(.)?'
     match = False
@@ -130,7 +133,7 @@ def match_how_are_you_response(user_input):
       user_input: the user input (SpaCy doc).
 
     Returns:
-      Match objects.
+      models.Match object.
     """
     r = r"^(I'm |I am )?" \
         r"(?P<state>([A-Z]{1}[a-z]*)|[a-z-]*)" \
@@ -171,7 +174,7 @@ def match_where_are_you_from_response(user_input):
       user_input: the user input (SpaCy doc).
 
     Returns:
-      Match objects.
+      models.Match object.
     """
     r = r"^(I'm from |I am from )?%s(.)?$" % common_regex.NAME  # same as place
     match = False
@@ -207,7 +210,7 @@ def match_how_old_are_you_response(user_input):
       user_input: the user input (SpaCy doc).
 
     Returns:
-      Match objects.
+      models.Match object.
     """
     r = r'^' \
         r"(I am |I'm )?" \
@@ -222,6 +225,46 @@ def match_how_old_are_you_response(user_input):
         info = pattern_match.group('number')
         age_match = common_regex.match_number(NLP(info))
         match = age_match.match
+    return models.Match(user_input, match, info)
+
+
+def match_what_grade_are_you_in_response(user_input):
+    """Match user input pattern for task 1.6.
+
+    PATTERN MATCHES:
+    BOT: What grade are you in?
+    USR: [options]
+    I am in the {ordinal} grade.
+    I'm in the {ordinal} grade.
+    The {ordinal} grade.
+    [/options]
+
+    INFO RETURNED:
+    The user's grade.
+
+    ISSUES:
+    -
+
+    Args:
+      user_input: the user input (SpaCy doc).
+
+    Returns:
+      models.Match object.
+    """
+    r = r'^' \
+        r"(I am in |I'm in )?" \
+        r'(The |the )' \
+        r"%s" % common_regex.ORDINAL + \
+        r"( grade)" \
+        r'(.)?' \
+        r'$'
+    match = False
+    info = None
+    pattern_match = re.match(r, user_input.text)
+    if pattern_match:
+        info = pattern_match.group('ordinal')
+        ordinal_match = common_regex.match_ordinal(NLP(info))
+        match = ordinal_match.match
     return models.Match(user_input, match, info)
 
 
@@ -295,3 +338,17 @@ def test_match_how_old_are_you_response():
     test_util.test_matches(matches,
                            non_matches,
                            match_how_old_are_you_response)
+
+
+def test_match_what_grade_are_you_in_response():
+    matches = [
+        (NLP('I am in the 7th grade.'), '7th'),
+        (NLP("I'm in the eighth grade."), 'eighth'),
+        (NLP('The Ninth grade.'), 'Ninth'),
+    ]
+    non_matches = [
+        NLP('I am in the eight grade.')
+    ]
+    test_util.test_matches(matches,
+                           non_matches,
+                           match_what_grade_are_you_in_response)
