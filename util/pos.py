@@ -1,1 +1,2 @@
 ADJECTIVES = ['JJ']
+NUMBER = ['CD']

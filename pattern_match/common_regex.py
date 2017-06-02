@@ -7,6 +7,7 @@ from pattern_match import errors
 from util import test_util
 
 NAME = r'(?P<name>(?P<first_name>[A-Z][a-z]*)(?P<last_name>\s[A-Z][a-z]*)?)'
+AGE = r'(?P<age>[0-9]{:2}|[a-z]*|[A-Z][a-z]*)'
 
 
 def name(user_input):

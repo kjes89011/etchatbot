@@ -150,29 +150,29 @@ def match_how_are_you_response(user_input):
 def match_where_are_you_from_response(user_input):
     """Match user input pattern for task 1.4.
 
-        PATTERN MATCHED:
-        BOT: Where are you from?
-        USR: [options]
-        I am from {Place}
-        I'm from {Place}
-        {Place}
-        [/options]
+    PATTERN MATCHED:
+    BOT: Where are you from?
+    USR: [options]
+    I am from {Place}
+    I'm from {Place}
+    {Place}
+    [/options]
 
-        INFO RETURNED:
-        Where the user is from.
+    INFO RETURNED:
+    Where the user is from.
 
-        ISSUES:
-        - What if the respond with an ethnicity: e.g. I'm Taiwanese?
-        - To really validate this input we need to make sure they
-          say a place, e.g. "Taiwan", and not something silly like
-          "Earth".
+    ISSUES:
+    - What if the respond with an ethnicity: e.g. I'm Taiwanese?
+    - To really validate this input we need to make sure they
+      say a place, e.g. "Taiwan", and not something silly like
+      "Earth".
 
-        Args:
-          user_input: the user input (SpaCy doc).
+    Args:
+      user_input: the user input (SpaCy doc).
 
-        Returns:
-          Match objects.
-        """
+    Returns:
+      Match objects.
+    """
     r = r"^(I'm from |I am from )?%s(.)?$" % common_regex.NAME  # same as place
     match = False
     info = None
@@ -181,6 +181,50 @@ def match_where_are_you_from_response(user_input):
         match = True
         info = pattern_match.group('name')
     return models.Match(user_input, match, info)
+
+
+def match_how_old_are_you_response(user_input):
+    """Match user input pattern for task 1.5.
+
+    PATTERN MATCHED:
+    BOT: How old are you?
+    USR: [options]
+    I am {age} years old
+    I'm {age} years old
+    I am {age}
+    I'm {age}
+    {age} years old
+    {age}
+    [/options]
+
+    INFO RETURNED:
+    The user's age.
+
+    ISSUES:
+    - The age could be given as text or a number.
+
+    Args:
+      user_input: the user input (SpaCy doc).
+
+    Returns:
+      Match objects.
+    """
+    r = r'^' \
+        r"(I am |I'm )?" \
+        r"%s" % common_regex.AGE + \
+        r"( years old)?" \
+        r'(.)?' \
+        r'$'
+    match = False
+    info = None
+    pattern_match = re.match(r, user_input.text)
+    if pattern_match:
+        info = pattern_match.group('age')
+        age_tok = NLP(info)[0]
+        if age_tok.tag_ in pos.NUMBER:
+            match = True
+    return models.Match(user_input, match, info)
+
 
 #
 # Testing
@@ -238,3 +282,17 @@ def test_match_where_are_your_from_response():
     test_util.test_matches(matches,
                            non_matches,
                            match_where_are_you_from_response)
+
+
+def test_match_how_old_are_you_response():
+    matches = [
+        (NLP('I am eight years old'), 'eight'),
+        (NLP("I'm 9 years old"), '9'),
+        (NLP('I am thirteen'), 'thirteen'),
+        (NLP("I'm twenty"), 'twenty'),
+        (NLP('Seven years old'), 'Seven'),
+        (NLP('11'), '11')]
+    non_matches = []
+    test_util.test_matches(matches,
+                           non_matches,
+                           match_how_old_are_you_response)

@@ -100,5 +100,4 @@ ENV/
 logs/
 data/
 stats/
-test.py
 predictions/
