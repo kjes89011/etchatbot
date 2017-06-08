@@ -101,3 +101,9 @@ logs/
 data/
 stats/
 predictions/
+
+# SSL key
+ssl/
+
+# webhook
+fb_webhook.py
