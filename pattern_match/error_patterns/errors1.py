@@ -69,6 +69,18 @@ def how_are_you(user_input):
     return models.ErrorResult(False)
 
 
+def where_are_you_from(user_input):
+    raise NotImplementedError()
+
+
+def how_old_are_you(user_input):
+    raise NotImplementedError()
+
+
+def what_grade_are_you_in(user_input):
+    raise NotImplementedError()
+
+
 """ Testing """
 
 
@@ -94,3 +106,15 @@ def test_how_are_you():
     assert how_are_you(NLP('I am fine thank you')).has_error
     assert how_are_you(NLP('I am fine thanks')).has_error
     test_util.result()
+
+
+def test_where_are_you_from():
+    pass
+
+
+def test_how_old_are_you():
+    pass
+
+
+def test_what_grade_are_you_in():
+    pass
