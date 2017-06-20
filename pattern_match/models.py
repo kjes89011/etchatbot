@@ -54,7 +54,7 @@ class InfoResult:
 class Match:
     def __init__(self, user_input, is_match, info):
         self.user_input = user_input
-        self.is_match = is_match
+        self.match = is_match
         self.info = info
 
 

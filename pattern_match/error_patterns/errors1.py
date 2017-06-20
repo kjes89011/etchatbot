@@ -40,24 +40,45 @@ def nice_to_meet_you(user_input):
     Nice to meet you      [missing ', too']
     Nice to meet you too  [missing ,
     """
-    pass
+    r_1 = r'^Nice to meet you(.)?$'
+    if re.match(r_1, user_input.text):
+        return models.ErrorResult(True, 'You must say "too".')
+    r_2 = r'^Nice to meet you too(.)?$'
+    if re.match(r_2, user_input.text):
+        return models.ErrorResult(True, 'You must use a comma before "too".')
+    return models.ErrorResult(False)
 
 
 def how_are_you(user_input):
     """
     Error set:
-    I am nice    [incorrect adjective]
+    I'm fine thank you.      [Missing comma]
     """
-    incorrect_adjectives = ['nice', '']
+    if re.match(r'.*[a-z]( thank you)(.)?$', user_input.text):
+        return models.ErrorResult(
+            True, 'You must use a comma before "thank you".')
+    if re.match(r'.*[a-z]( thanks)(.)?$', user_input.text):
+        return models.ErrorResult(
+            True, 'You must use a comma before "thanks".')
+    return models.ErrorResult(False)
 
 
 """ Testing """
 
 
 def test_what_is_your_name():
-    r1 = what_is_your_name(NLP('I am Tim'))
-    assert not r1.has_error
-    r2 = what_is_your_name(NLP('I am tim'))
-    assert r2.has_error
-    r3 = what_is_your_name(NLP('He is Tim'))
-    assert r3.has_error
+    assert not what_is_your_name(NLP('I am Tim')).has_error
+    assert what_is_your_name(NLP('I am tim')).has_error
+    assert what_is_your_name(NLP('He is Tim')).has_error
+
+
+def test_nice_to_meet_you():
+    assert not nice_to_meet_you(NLP('Nice to meet you, too')).has_error
+    assert nice_to_meet_you(NLP('Nice to meet you')).has_error
+    assert nice_to_meet_you(NLP('Nice to meet you too')).has_error
+
+
+def test_how_are_you():
+    assert not how_are_you(NLP('I am fine, thank you')).has_error
+    assert how_are_you(NLP('I am fine thank you')).has_error
+    assert how_are_you(NLP('I am fine thanks')).has_error

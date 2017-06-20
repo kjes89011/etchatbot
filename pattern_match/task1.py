@@ -6,6 +6,9 @@ from pattern_match.patterns.task1 import goal1, goal2
 from pattern_match.error_patterns import errors1
 
 
+def no_match(user_input):
+    return models.Match(user_input, False, None)
+
 class TempWrapper:
     """Temporary wrapper object to hook this up to the interface."""
     def __init__(self, match_function, error_function):
@@ -116,7 +119,7 @@ def match_name(user_input):
         if pattern_match:
             match = True
             info = pattern_match.group('name')
-    return match, info
+    return models.Match(user_input, match, info)
 
 
 def match_nice_to_meet_you(user_input):
@@ -168,8 +171,6 @@ def match_how_are_you_response(user_input):
     - There is a lot of potential variation in the state.
       Therefore make this a regex group, extract it, and process
       it separately.
-    - What about adjective modifiers for the state? very happy,
-      super tired, not good, etc...?
 
     Args:
       user_input: the user input (SpaCy doc).
@@ -178,17 +179,22 @@ def match_how_are_you_response(user_input):
       models.Match object.
     """
     r = r"^(I'm |I am )?" \
+        r"(very |not )?" \
         r"(?P<state>([A-Z]{1}[a-z]*)|[a-z-]*)" \
         r"(, thank you|, thanks)?(.)?$"
     match = False
     info = None
     pattern_match = re.match(r, user_input.text)
     if pattern_match is not None:
-        info = pattern_match.group(2)
+        modifier = pattern_match.group(2)
+        state = pattern_match.group(3)
         # state should be an adjective
-        info_tok = NLP(info)[0]
+        info_tok = NLP(state)[0]
         if info_tok.tag_ in pos.ADJECTIVES:
             match = True
+            info = state
+            if modifier:
+                info = modifier + state
     return models.Match(user_input, match, info)
 
 
@@ -346,6 +352,8 @@ def test_match_how_are_you_response():
         (NLP('I am fine.'), 'fine'),
         (NLP("I'm sad"), 'sad'),
         (NLP('Healthy, thank you.'), 'Healthy'),
+        (NLP('I am not good'), 'not good'),
+        (NLP('I am very happy'), 'very happy'),
         (NLP('I am happy, thanks.'), 'happy')]
     non_matches = [
         NLP('I am banana, thank you.'),                        # not an adj.
