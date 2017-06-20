@@ -1,7 +1,7 @@
 """Error pattern sets for task 1."""
 import re
 from pattern_match import models
-from util import pos, NLP
+from util import NLP, test_util
 
 
 # error functions return 'Bool, String'
@@ -23,14 +23,20 @@ def what_is_your_name(user_input):
     head = next(t for t in user_input if t.head == t)
     if head.lemma_ == 'be':
         right_children = list(head.rights)
-        if len(right_children) == 1:
-            target = right_children[0]
-            if target.pos_ == 'ADJ':
-                temp = NLP(target.text)
-                if temp[0].pos_ == 'NOUN':
+        if len(right_children) >= 1:
+            target = right_children[0]  # first is all we want
+            if target.is_lower:
+                if target.pos_ == 'NOUN':
                     return models.ErrorResult(
-                        True, 'Your name must start with a big letter: '
-                              '"Steve" and not "steve".')
+                        True,
+                        'Your name must start with a big letter: '
+                        '"Steve" and not "steve".')
+                if target.pos_ == 'ADJ':
+                    temp = NLP(target.text)
+                    if temp[0].pos_ == 'NOUN':
+                        return models.ErrorResult(
+                            True, 'Your name must start with a big letter: '
+                                  '"Steve" and not "steve".')
     return models.ErrorResult(False)
 
 
@@ -67,18 +73,24 @@ def how_are_you(user_input):
 
 
 def test_what_is_your_name():
+    test_util.start('Testing errors1.what_is_your_name...')
     assert not what_is_your_name(NLP('I am Tim')).has_error
     assert what_is_your_name(NLP('I am tim')).has_error
     assert what_is_your_name(NLP('He is Tim')).has_error
+    test_util.result()
 
 
 def test_nice_to_meet_you():
+    test_util.start('Testing errors1.nice_to_meet_you...')
     assert not nice_to_meet_you(NLP('Nice to meet you, too')).has_error
     assert nice_to_meet_you(NLP('Nice to meet you')).has_error
     assert nice_to_meet_you(NLP('Nice to meet you too')).has_error
+    test_util.result()
 
 
 def test_how_are_you():
+    test_util.start('Testing errors1.how_are_you...')
     assert not how_are_you(NLP('I am fine, thank you')).has_error
     assert how_are_you(NLP('I am fine thank you')).has_error
     assert how_are_you(NLP('I am fine thanks')).has_error
+    test_util.result()

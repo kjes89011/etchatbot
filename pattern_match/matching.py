@@ -71,10 +71,16 @@ def __task(number):
 """ Testing """
 
 
-def test_match():
-    assert match(1, 1, NLP('My name is Tim'))
-    assert not match(1, 1, NLP('Me nom es Tim'))
-
-
-def test_info():
-    test_util.assertion(info(1, 1, NLP('My name is Tim')), 'Tim', None)
+def test_wiring():
+    test_util.start('Testing pattern_match.matching wiring...')
+    # 1.1
+    test_util.assertion(match(1, 1, NLP('My name is Tim')),
+                        True,
+                        'match')
+    test_util.assertion(info(1, 1, NLP('My name is Tim')),
+                        'Tim',
+                        'info')
+    test_util.assertion(error(1, 1, NLP('My name is tim')).has_error,
+                        True,
+                        'error')
+    test_util.result()

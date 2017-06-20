@@ -1,4 +1,10 @@
 """Utilities for testing."""
+import functools
+
+
+ERROR = False
+COUNT = 0
+ERROR_COUNT = 0
 
 
 def assertion(actual, expected, info):
@@ -9,15 +15,33 @@ def assertion(actual, expected, info):
       expected: expected result.
       info: info (string) to print for debugging.
     """
+    global ERROR, COUNT, ERROR_COUNT
+    COUNT += 1
     success = False
     try:
         assert actual == expected
         success = True
     except AssertionError:
+        ERROR = True
+        ERROR_COUNT += 1
         print('Assertion failed for: %s\n'
               'Actual: %s\n'
               'Expected: %s' % (info, actual, expected))
     return success
+
+
+def result():
+    global ERROR
+    if not ERROR:
+        print('*** OK ***\n')
+    else:
+        print('*** FAILED ***\n')
+
+
+def start(info):
+    global ERROR
+    ERROR = False
+    print('------\n%s' % info)
 
 
 def test_matches(matches, non_matches, match_fn):

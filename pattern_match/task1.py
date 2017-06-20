@@ -16,6 +16,9 @@ class TempWrapper:
         self.match_function = match_function
         self.error_function = error_function
 
+    def error(self, user_input):
+        return self.error_function(user_input)
+
     def info(self, user_input):
         return self.match_function(user_input).info
 
@@ -58,11 +61,12 @@ def goal(number):
     """
     goals = {
         1: TempWrapper(match_name, errors1.what_is_your_name),
-        2: match_nice_to_meet_you,
-        3: match_how_are_you_response,
-        4: match_where_are_you_from_response,
-        5: match_how_old_are_you_response,
-        6: match_what_grade_are_you_in_response}
+        2: TempWrapper(match_nice_to_meet_you, errors1.nice_to_meet_you),
+        3: TempWrapper(match_how_are_you_response, errors1.how_are_you),
+        #4: match_where_are_you_from_response,
+        #5: match_how_old_are_you_response,
+        #6: match_what_grade_are_you_in_response
+    }
     if number not in goals.keys():
         raise errors.InvalidKeyError(number, goals.keys())
     return goals[number]
