@@ -1,2 +1,3 @@
 ADJECTIVES = ['JJ']
 NUMBER = ['CD']
+PRONOUN = ['PRP']

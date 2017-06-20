@@ -1,7 +1,8 @@
 """Commonly required regular expressions."""
 import re
+
 from pattern_match import errors, models
-from util import test_util, NLP, pos
+from util import test_util, NLP, pos, errors
 
 NAME = r'(?P<name>(?P<first_name>[A-Z][a-z]*)(?P<last_name>\s[A-Z][a-z]*)?)'
 NUMBER = r'(?P<number>([0-9]*|[a-z]*|[A-Z][a-z]*))'

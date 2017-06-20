@@ -1,22 +1,33 @@
 """Matching input patterns for Task 1."""
 import re
-from pattern_match import common_regex, models, errors
-from util import pos, test_util, NLP
+
+from pattern_match import common_regex, models
+from util import pos, test_util, NLP, errors
+from pattern_match.patterns.task1 import goal1
+
+
+def get_goals():
+    return [
+        models.Goal(goal1.get_patterns(), True),
+
+    ]
 
 
 def goal(number):
-    """Interface for getting match method per goal.
+    """Interface for getting to Pattern check objects for goals.
 
     Usage from calling code:
-    from pattern_match import match  # imports all task files
-    is_match, info = match.task(1).goal(1)(user_input)
+    from pattern_match import matching  # imports all task files
+    result = matching.task(1).goal(1).--function--(user_input),
+    where --function-- is in the set {match, info, errors}.
+    The output of this will vary depending on the function.
 
     Args:
       number: the goal number.
 
     Returns:
       function accepting a SpaCy document of user input,
-        which returns a tuple (bool, info) containing a
+        which returns an object (depending on the function)
         bool indicating whether the input is a match to
         the requirements, and optionally any info that
         needs to be extracted from the input.
@@ -37,20 +48,34 @@ def goal(number):
     return goals[number]
 
 
+class WhatIsYourName:
+    def __init__(self):
+        self.patterns = []
+
+    def match(self, user_input):
+        pass
+
+
 def match_name(user_input):
     """Match user input pattern for task 1.1.
 
+    I look for PRP VBP NNP.
+
+    pattern = db.get(...)
+
+
     PATTERN MATCHED:
     BOT: What's your name?
-    USR: [options]
-    My name's ____.
-    My name is ____.
-    It's ____.
-    It is ____.
-    I'm ____.
-    I am ____.
-    ____.
-    [/options]
+    USR:
+    [option_set]
+    1: My name's ____.
+    2: My name is ____.
+    3: It's ____.
+    4: It is ____.
+    5: I'm ____.
+    6: I am ____.
+    7: ____.
+    [/option_set]
 
     INFO RETURNED:
     The user's name.
@@ -91,6 +116,9 @@ def match_nice_to_meet_you(user_input):
     BOT: Nice to meet you.
     USR: Nice to meet you, too.
 
+    You, too.
+    Happy|Glad to meet you, too.
+
     INFO RETURNED:
     None.
 
@@ -117,6 +145,10 @@ def match_how_are_you_response(user_input):
     I am {state}(, thank you|thanks)
     I'm {state}(, thank you|thanks)
     {State}(, thank you|thanks)
+    I have a cold
+    Not bad
+    Not too bad
+    I feel happy
     [/options]
 
     INFO RETURNED:
