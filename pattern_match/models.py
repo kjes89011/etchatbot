@@ -51,6 +51,13 @@ class InfoResult:
             raise err.IntegrityError('Expected info but got none.')
 
 
+class Match:
+    def __init__(self, user_input, is_match, info):
+        self.user_input = user_input
+        self.is_match = is_match
+        self.info = info
+
+
 class MatchResult:
     def __init__(self, is_match, pattern_number):
         self.is_match = is_match
