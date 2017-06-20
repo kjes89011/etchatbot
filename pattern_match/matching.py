@@ -12,10 +12,10 @@ TASKS = {
 }
 
 
-def errors(task_number, goal_number, user_input):
+def error(task_number, goal_number, user_input):
     """  """
     err.check_input(user_input)
-    return __task(task_number)(goal_number).errors(user_input)
+    return __task(task_number)(goal_number).error(user_input)
 
 
 def info(task_number, goal_number, user_input):

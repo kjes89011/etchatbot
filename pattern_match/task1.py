@@ -1,18 +1,36 @@
 """Matching input patterns for Task 1."""
 import re
-
 from pattern_match import common_regex, models
 from util import pos, test_util, NLP, errors
-from pattern_match.patterns.task1 import goal1
+from pattern_match.patterns.task1 import goal1, goal2
+from pattern_match.error_patterns import errors1
 
 
+class TempWrapper:
+    """Temporary wrapper object to hook this up to the interface."""
+    def __init__(self, match_function, error_function):
+        self.match_function = match_function
+        self.error_function = error_function
+
+    def info(self, user_input):
+        _, info = self.match_function(user_input)
+        return info
+
+    def match(self, user_input):
+        match, _ = self.match_function(user_input)
+        return match
+
+
+# This deprecated for now... might pick it back up in task2.
 def get_goals():
     return [
         models.Goal(goal1.get_patterns(), True),
+        models.Goal(goal2.get_patterns(), False),
 
     ]
 
 
+# this is how we are handling task1.
 def goal(number):
     """Interface for getting to Pattern check objects for goals.
 
@@ -37,7 +55,7 @@ def goal(number):
         expected values.
     """
     goals = {
-        1: match_name,
+        1: TempWrapper(match_name, errors1.what_is_your_name),
         2: match_nice_to_meet_you,
         3: match_how_are_you_response,
         4: match_where_are_you_from_response,
@@ -46,14 +64,6 @@ def goal(number):
     if number not in goals.keys():
         raise errors.InvalidKeyError(number, goals.keys())
     return goals[number]
-
-
-class WhatIsYourName:
-    def __init__(self):
-        self.patterns = []
-
-    def match(self, user_input):
-        pass
 
 
 def match_name(user_input):
@@ -106,7 +116,7 @@ def match_name(user_input):
         if pattern_match:
             match = True
             info = pattern_match.group('name')
-    return models.Match(user_input, match, info)
+    return match, info
 
 
 def match_nice_to_meet_you(user_input):

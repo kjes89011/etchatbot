@@ -3,31 +3,34 @@ from util import errors as err
 
 
 class ErrorResult:
-    def __init__(self, has_error, errors):
+    def __init__(self, has_error, error_message):
         self.has_error = has_error
-        self.errors = errors
+        self.error_message = error_message
 
 
 class Goal:
-    def __init__(self, patterns, returns_info=True):
+    def __init__(self, patterns, error_patterns, returns_info=True):
         self.patterns = dict(zip(range(len(patterns)), patterns))
+        self.error_patterns = dict(zip(range(len(error_patterns)),
+                                       error_patterns))
         self.returns_info = returns_info
         self.last_match = None
 
     def errors(self, user_input):
-        # default case evaluates last call to match
-        if self.last_match.is_match:
-            return self.patterns[self.last_match.pattern_number]
-        else:
-            return ErrorResult(False, [])
+        for i, error_pattern in self.error_patterns:
+            error_result = error_pattern.match(user_input)
+            if error_result.error_found:
+                return error_result
+        return ErrorResult(False, None)
 
     def info(self, user_input):
         # default case evaluates last call to match
         if not self.returns_info:
             return InfoResult(None, False)
         if self.last_match.is_match:
-            return self.patterns[self.last_match.pattern_number]\
-                .info(user_input)
+            return InfoResult(
+                self.patterns[self.last_match.pattern_number].info(user_input),
+                True)
 
     def match(self, user_input):
         for i, pattern in self.patterns:
