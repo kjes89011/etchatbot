@@ -1,6 +1,7 @@
 """Patterns for Task 1, Goal 1: What's your name?"""
-import spacy
+from util import NLP
 import re
+from pattern_match import models
 
 
 """
@@ -22,9 +23,9 @@ def get_patterns():
     ]
 
 
-class Pattern1:
+class Pattern1(models.Pattern):
     def __init__(self):
-        pass
+        super(Pattern1, self).__init__()
 
     def match(self, user_input):
         pass
