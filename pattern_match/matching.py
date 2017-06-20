@@ -2,6 +2,7 @@
 from pattern_match import task1
 from util import errors as err
 from pattern_match.tasks import *
+from util import NLP, test_util
 
 
 TASKS = {
@@ -65,3 +66,15 @@ def __task(number):
         raise err.ValueError(
             number, 'Integer in the range of 1 to %s' % number_of_tasks)
     return TASKS[number]
+
+
+""" Testing """
+
+
+def test_match():
+    assert match(1, 1, NLP('My name is Tim'))
+    assert not match(1, 1, NLP('Me nom es Tim'))
+
+
+def test_info():
+    test_util.assertion(info(1, 1, NLP('My name is Tim')), 'Tim', None)

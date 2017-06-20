@@ -9,6 +9,7 @@ from pattern_match.error_patterns import errors1
 def no_match(user_input):
     return models.Match(user_input, False, None)
 
+
 class TempWrapper:
     """Temporary wrapper object to hook this up to the interface."""
     def __init__(self, match_function, error_function):
@@ -16,12 +17,10 @@ class TempWrapper:
         self.error_function = error_function
 
     def info(self, user_input):
-        _, info = self.match_function(user_input)
-        return info
+        return self.match_function(user_input).info
 
     def match(self, user_input):
-        match, _ = self.match_function(user_input)
-        return match
+        return self.match_function(user_input).match
 
 
 # This deprecated for now... might pick it back up in task2.

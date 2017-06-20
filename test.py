@@ -1,5 +1,4 @@
-from pattern_match import task1, common_regex
-from util import NLP
+from pattern_match import task1, common_regex, matching
 from pattern_match.error_patterns import errors1
 
 
@@ -16,3 +15,5 @@ if __name__ == '__main__':
     errors1.test_what_is_your_name()
     errors1.test_nice_to_meet_you()
     errors1.test_how_are_you()
+    matching.test_match()
+    matching.test_info()
