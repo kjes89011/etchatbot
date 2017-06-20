@@ -3,7 +3,7 @@ from util import errors as err
 
 
 class ErrorResult:
-    def __init__(self, has_error, error_message):
+    def __init__(self, has_error, error_message=None):
         self.has_error = has_error
         self.error_message = error_message
 
