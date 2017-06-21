@@ -1,6 +1,7 @@
 from pattern_match import task1, common_regex, matching
-from pattern_match.error_patterns import errors1
+from pattern_match.error_patterns import errors1, errors2
 from util import test_util
+from pattern_match.patterns.task2 import goal1 as t2g1
 
 
 if __name__ == '__main__':
@@ -17,6 +18,9 @@ if __name__ == '__main__':
     errors1.test_nice_to_meet_you()
     errors1.test_how_are_you()
     matching.test_wiring()
+    t2g1.test_she_is_a_doctor_match()
+    errors2.test_wrong_subject()
+    errors2.test_capitalized_doctor()
 
     print('\n\n%s/%s with errors.' %
           (test_util.ERROR_COUNT, test_util.COUNT))

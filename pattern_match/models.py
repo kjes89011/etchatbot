@@ -2,6 +2,14 @@
 from util import errors as err
 
 
+class ErrorPattern:
+    def __init__(self):
+        pass
+
+    def match(self, user_input):
+        raise NotImplementedError()
+
+
 class ErrorResult:
     def __init__(self, has_error, error_message=None):
         self.has_error = has_error
@@ -16,39 +24,27 @@ class Goal:
         self.returns_info = returns_info
         self.last_match = None
 
-    def errors(self, user_input):
-        for i, error_pattern in self.error_patterns:
+    def error(self, user_input):
+        for i, error_pattern in self.error_patterns.items():
             error_result = error_pattern.match(user_input)
-            if error_result.error_found:
+            if error_result.has_error:
                 return error_result
         return ErrorResult(False, None)
 
     def info(self, user_input):
         # default case evaluates last call to match
         if not self.returns_info:
-            return InfoResult(None, False)
+            return None
         if self.last_match.is_match:
-            return InfoResult(
-                self.patterns[self.last_match.pattern_number].info(user_input),
-                True)
+            return self.patterns[self.last_match.pattern_number]\
+                .info(user_input)
 
     def match(self, user_input):
-        for i, pattern in self.patterns:
+        for i, pattern in self.patterns.items():
             match_result = pattern.match(user_input)
-            if match_result.is_match:
-                return match_result
-        return MatchResult(False, None)
-
-
-class InfoResult:
-    def __init__(self, info, info_expected):
-        self.info = info
-        self.info_expected = info_expected
-        self.integrity_check()
-
-    def integrity_check(self):
-        if self.info_expected and not self.info:
-            raise err.IntegrityError('Expected info but got none.')
+            if match_result:
+                return True
+        return False
 
 
 class Match:
@@ -58,18 +54,9 @@ class Match:
         self.info = info
 
 
-class MatchResult:
-    def __init__(self, is_match, pattern_number):
-        self.is_match = is_match
-        self.pattern_number = pattern_number
-
-
 class Pattern:
     def __init__(self):
         pass
-
-    def errors(self, user_input):
-        raise NotImplementedError()
 
     def info(self, user_input):
         raise NotImplementedError()

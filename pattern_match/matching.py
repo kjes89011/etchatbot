@@ -1,5 +1,5 @@
 """Interface module for tasks pattern matching and info extraction."""
-from pattern_match import task1
+from pattern_match import task1, task2
 from util import errors as err
 from pattern_match.tasks import *
 from util import NLP, test_util
@@ -7,7 +7,7 @@ from util import NLP, test_util
 
 TASKS = {
     1: task1.goal,
-    #2: task2.goal,
+    2: task2.goal,
     #3: task3.goal,
     #4: task4.goal
 }
@@ -76,11 +76,21 @@ def test_wiring():
     # 1.1
     test_util.assertion(match(1, 1, NLP('My name is Tim')),
                         True,
-                        'match')
+                        'match 1.1')
     test_util.assertion(info(1, 1, NLP('My name is Tim')),
                         'Tim',
-                        'info')
+                        'info 1.1')
     test_util.assertion(error(1, 1, NLP('My name is tim')).has_error,
                         True,
-                        'error')
+                        'error 1.1')
+    # 2.1
+    test_util.assertion(match(2, 1, NLP('She is a doctor')),
+                        True,
+                        'match 2.1')
+    test_util.assertion(info(2, 1, NLP('She is a doctor')),
+                        None,
+                        'info 2.1')
+    test_util.assertion(error(2, 1, NLP('She is a Doctor')).has_error,
+                        True,
+                        'error 2.1')
     test_util.result()
