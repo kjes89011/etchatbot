@@ -13,9 +13,13 @@ _goal2 = models.Goal(
     patterns=patterns.GOAL2,
     error_patterns=errors2.errors(2),
     returns_info=False)
+_goal3 = models.Goal(
+    patterns=patterns.GOAL3,
+    error_patterns=errors2.errors(3))
 GOALS = {
     1: _goal1,
-    2: _goal2
+    2: _goal2,
+    3: _goal3
 }
 
 

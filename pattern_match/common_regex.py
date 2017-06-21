@@ -7,6 +7,7 @@ from util import test_util, NLP, pos, errors
 NAME = r'(?P<name>(?P<first_name>[A-Z][a-z]*)(?P<last_name>\s[A-Z][a-z]*)?)'
 NUMBER = r'(?P<number>([0-9]*|[a-z]*|[A-Z][a-z]*))'
 ORDINAL = r'(?P<ordinal>([0-9]*[a-z]{2}|[a-z]*|[A-z][a-z]*))'
+JOB = r'(?P<job>[a-z]*( [a-z]*)?)'
 
 
 def match_name(user_input):

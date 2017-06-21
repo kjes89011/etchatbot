@@ -35,14 +35,14 @@ class Goal:
         # default case evaluates last call to match
         if not self.returns_info:
             return None
-        if self.last_match.is_match:
-            return self.patterns[self.last_match.pattern_number]\
-                .info(user_input)
+        if self.last_match:
+            return self.patterns[self.last_match].info(user_input)
 
     def match(self, user_input):
         for i, pattern in self.patterns.items():
             match_result = pattern.match(user_input)
             if match_result:
+                self.last_match = i
                 return True
         return False
 
