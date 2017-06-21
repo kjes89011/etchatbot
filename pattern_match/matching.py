@@ -7,9 +7,7 @@ from util import NLP, test_util
 
 TASKS = {
     1: task1.goal,
-    2: task2.goal,
-    #3: task3.goal,
-    #4: task4.goal
+    2: task2.goal
 }
 
 
@@ -93,4 +91,14 @@ def test_wiring():
     test_util.assertion(error(2, 1, NLP('She is a Doctor')).has_error,
                         True,
                         'error 2.1')
+    # 2.2
+    test_util.assertion(match(2, 2, NLP('He is a cook')),
+                        True,
+                        'match 2.2')
+    test_util.assertion(info(2, 2, NLP('He is a cook')),
+                        None,
+                        'info 2.2')
+    test_util.assertion(error(2, 2, NLP('He is a Cook')).has_error,
+                        True,
+                        'error 2.2')
     test_util.result()

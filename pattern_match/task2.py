@@ -9,9 +9,13 @@ _goal1 = models.Goal(
     patterns=patterns.GOAL1,
     error_patterns=errors2.errors(1),
     returns_info=False)
+_goal2 = models.Goal(
+    patterns=patterns.GOAL2,
+    error_patterns=errors2.errors(2),
+    returns_info=False)
 GOALS = {
     1: _goal1,
-
+    2: _goal2
 }
 
 
