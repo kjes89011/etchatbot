@@ -2,7 +2,7 @@
 import re
 
 from pattern_match import models
-from util import test_util, NLP, pos, errors
+from util import test_util, NLP, pos, errors, common
 
 NAME = r'(?P<name>(?P<first_name>[A-Z][a-z]*)(?P<last_name>\s[A-Z][a-z]*)?)'
 NUMBER = r'(?P<number>([0-9]*|[a-z]*|[A-Z][a-z]*))'
@@ -52,9 +52,12 @@ def match_number(user_input):
     pattern_match = re.match('^' + NUMBER + '$', user_input.text)
     if pattern_match:
         info = pattern_match.group('number')
-        if info not in excluded and user_input[0].tag_ in pos.NUMBER:
-            match = True
-    return models.Match(user_input, match, info)
+        is_excluded = info in excluded
+        if not is_excluded:
+            is_digit = user_input[0].tag_ in pos.NUMBER
+            is_well_formed = common.well_formed_number(info)
+            match = is_digit or is_well_formed
+    return models.Match(user_input, match, info.lower())
 
 
 def match_ordinal(user_input):
@@ -96,6 +99,9 @@ def match_ordinal(user_input):
     return models.Match(user_input, match, info)
 
 
+""" Testing """
+
+
 def test_name():
     matches = [
         (NLP('Tim'), 'Tim'),
@@ -112,7 +118,7 @@ def test_name():
 def test_number():
     matches = [
         (NLP('eleven'), 'eleven'),
-        (NLP('Nine'), 'Nine'),
+        (NLP('Nine'), 'nine'),
         (NLP('13'), '13')]
     non_matches = [
         NLP('much'),

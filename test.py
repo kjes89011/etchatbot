@@ -1,7 +1,7 @@
 from pattern_match import task1, common_regex, matching
 from pattern_match.error_patterns import errors1, errors2
 from pattern_match.error_patterns import common as common_errors
-from util import test_util
+from util import test_util, common
 from pattern_match.patterns.task2 import goal1 as t2g1
 from pattern_match.patterns.task2 import goal2 as t2g2
 from pattern_match.patterns.task2 import goal3 as t2g3
@@ -11,6 +11,10 @@ from pattern_match.patterns.task2 import goal6 as t2g6
 
 
 if __name__ == '__main__':
+    common.test_age_bracket()
+    common.test_state_is_positive()
+    common.test_text_to_number()
+    common.test_well_formed_number()
     common_regex.test_name()
     common_regex.test_number()
     common_regex.test_ordinal()
