@@ -2,16 +2,23 @@
 from pattern_match import models, common_regex
 import re
 from util import test_util, NLP, common
+from pattern_match.error_patterns import common as common_errors
 
 
 def errors(goal_number):
     lists = {
-        1: [WrongSubject(), CapitalizedDoctor(), WrongJob('doctor')],
-        2: [WrongSubject2(), CapitalizedCook(), WrongJob('cook')],
-        3: [CapitalizedMother()],
-        4: [CapitalizedFather()],
-        5: [TooShortAnswer(), MissingComma()],
-        6: [WrongJob('nurse')]
+        1: common_errors.all_errors()
+           + [WrongSubject(), CapitalizedDoctor(), WrongJob('doctor')],
+        2: common_errors.all_errors()
+           + [WrongSubject2(), CapitalizedCook(), WrongJob('cook')],
+        3: common_errors.all_errors()
+           + [CapitalizedMother()],
+        4: common_errors.all_errors()
+           + [CapitalizedFather()],
+        5: common_errors.all_errors()
+           + [TooShortAnswer(), MissingComma()],
+        6: common_errors.all_errors()
+           + [WrongJob('nurse')]
     }
     return lists[goal_number]
 

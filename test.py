@@ -1,5 +1,6 @@
 from pattern_match import task1, common_regex, matching
 from pattern_match.error_patterns import errors1, errors2
+from pattern_match.error_patterns import common as common_errors
 from util import test_util
 from pattern_match.patterns.task2 import goal1 as t2g1
 from pattern_match.patterns.task2 import goal2 as t2g2
@@ -31,6 +32,9 @@ if __name__ == '__main__':
     t2g4.test_my_father_is_a_job()
     t2g5.test_no_he_is_not()
     t2g6.test_he_is_a_nurse()
+    common_errors.test_missing_verb()
+    common_errors.test_missing_determiner()
+    common_errors.test_wrong_determiner()
     errors2.test_wrong_subject()
     errors2.test_capitalized_doctor()
     errors2.test_wrong_job_1()

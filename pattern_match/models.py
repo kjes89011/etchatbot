@@ -1,5 +1,4 @@
 """Useful classes for pattern_match module."""
-from util import errors as err
 
 
 class ErrorPattern:
