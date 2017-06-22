@@ -14,6 +14,9 @@ GENERIC_QUESTION_BACKS = [
 VOWELS = [
     'a', 'e', 'i', 'o', 'u'
 ]
+NEGATIONS = [
+    'not', "n't"
+]
 
 
 def head(spacy_doc):

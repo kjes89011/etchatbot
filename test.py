@@ -36,6 +36,7 @@ if __name__ == '__main__':
     common_errors.test_missing_verb()
     common_errors.test_missing_determiner()
     common_errors.test_wrong_determiner()
+    common_errors.test_polarity_mismatch()
     errors2.test_wrong_subject()
     errors2.test_capitalized_doctor()
     errors2.test_wrong_job_1()
@@ -46,6 +47,8 @@ if __name__ == '__main__':
     errors2.test_capitalized_father()
     errors2.test_missing_comma()
     errors2.test_too_short_answer()
+    errors2.test_wrong_subject_5()
+    errors2.test_yes()
     errors2.test_wrong_job_3()
 
     print('\n\n%s/%s with errors.' %

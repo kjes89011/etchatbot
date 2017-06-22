@@ -16,7 +16,7 @@ def errors(goal_number):
         4: common_errors.all_errors()
            + [CapitalizedFather()],
         5: common_errors.all_errors()
-           + [TooShortAnswer(), MissingComma()],
+           + [TooShortAnswer(), MissingComma(), Yes()],
         6: common_errors.all_errors()
            + [WrongJob('nurse')]
     }
@@ -156,6 +156,28 @@ class MissingComma(models.ErrorPattern):
             return models.ErrorResult(False)
 
 
+class Yes(models.ErrorPattern):
+    def __init__(self):
+        super(Yes, self).__init__()
+
+    def match(self, user_input):
+        if re.match(r'Yes(, he is)?(.)?$', user_input.text):
+            return models.ErrorResult(True, 'Wrong answer.')
+        return models.ErrorResult(False)
+
+
+class WrongSubject5(models.ErrorPattern):
+    def __init__(self):
+        super(WrongSubject5, self).__init__()
+
+    def match(self, user_input):
+        if re.match(r"^((Yes|No), (she|it)|(She|It)) (is|isn't)(.)?$",
+                    user_input.text):
+            return models.ErrorResult(True, 'He is a man. You must '
+                                            'use "he".')
+        return models.ErrorResult(False)
+
+
 # Goal 6
 
 
@@ -288,6 +310,42 @@ def test_missing_comma():
         ep.match(NLP("No he isn't.")).has_error, True, "No he isn't")
     test_util.assertion(
         ep.match(NLP('No, he is not.')).has_error, False, 'No, he is not')
+    test_util.result()
+
+
+def test_yes():
+    test_util.start('Testing Yes...')
+    ep = Yes()
+    test_util.assertion(
+        ep.match(NLP('Yes, he is')).has_error, True, 'Yes, he is')
+    test_util.assertion(
+        ep.match(NLP("Yes")).has_error, True, "Yes")
+    test_util.assertion(
+        ep.match(NLP('No, he is not')).has_error, False, 'No, he is not')
+    test_util.result()
+
+
+def test_wrong_subject_5():
+    test_util.start('Testing WrongSubject5...')
+    ep = WrongSubject5()
+    test_util.assertion(
+        ep.match(NLP('Yes, she is')).has_error, True, 'Yes, she is')
+    test_util.assertion(
+        ep.match(NLP("No, she isn't")).has_error, True, "Yes")
+    test_util.assertion(
+        ep.match(NLP('Yes, it is')).has_error, True, 'Yes, it is')
+    test_util.assertion(
+        ep.match(NLP("No, it isn't")).has_error, True, "No, it isn't")
+    test_util.assertion(
+        ep.match(NLP("She is")).has_error, True, "She is")
+    test_util.assertion(
+        ep.match(NLP("She isn't")).has_error, True, "She isn't")
+    test_util.assertion(
+        ep.match(NLP("It is")).has_error, True, "It is")
+    test_util.assertion(
+        ep.match(NLP("It isn't")).has_error, True, "It isn't")
+    test_util.assertion(
+        ep.match(NLP('No, he is not')).has_error, False, 'No, he is not')
     test_util.result()
 
 

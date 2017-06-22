@@ -3,7 +3,8 @@ from util import common, test_util, NLP
 
 
 def all_errors():
-    return [MissingVerb(), MissingDeterminer(), WrongDeterminer()]
+    return [MissingVerb(), MissingDeterminer(), WrongDeterminer(),
+            PolarityMismatch()]
 
 
 class MissingVerb(models.ErrorPattern):
@@ -63,6 +64,33 @@ class WrongDeterminer(models.ErrorPattern):
         return models.ErrorResult(False)
 
 
+class PolarityMismatch(models.ErrorPattern):
+    def __init__(self):
+        super(PolarityMismatch, self).__init__()
+
+    def match(self, user_input):
+        if user_input[0].pos_ == 'INTJ':  # yes or no
+            head = common.head(user_input)  # likely to be is
+            if user_input[0].text == 'Yes':
+                if len(user_input) > head.i + 1:  # I think that maths is right
+                    follow = user_input[head.i + 1]
+                    if follow.pos_ == 'ADV' and follow.text in common.NEGATIONS:
+                        return models.ErrorResult(True,
+                                                  "If you want so say 'Yes', "
+                                                  "then make sure to use 'is'")
+            if user_input[0].text == 'No':
+                if len(user_input) > head.i + 1:
+                    follow = user_input[head.i + 1]
+                    follow_error = follow.pos_ != 'ADV' \
+                                   and follow.text not in common.NEGATIONS
+                    if follow_error or len(user_input) < head.i + 2:
+                       return models.ErrorResult(True,
+                                                 "If you want to say 'No', '"
+                                                 "then make sure to use 'is "
+                                                 "not' or 'isn't'.")
+        return models.ErrorResult(False)
+
+
 """ Testing """
 
 
@@ -92,4 +120,14 @@ def test_wrong_determiner():
     test_util.assertion(ep.match(NLP('He is a apple')).has_error, True, None)
     test_util.assertion(ep.match(NLP('He is an apple')).has_error, False, None)
     test_util.assertion(ep.match(NLP('He is a doctor')).has_error, False, None)
+    test_util.result()
+
+
+def test_polarity_mismatch():
+    test_util.start('Testing PolarityMismatch...')
+    ep = PolarityMismatch()
+    test_util.assertion(ep.match(NLP('Yes, he is')).has_error, False, None)
+    test_util.assertion(ep.match(NLP('No, he is not')).has_error, False, None)
+    test_util.assertion(ep.match(NLP("Yes, he isn't")).has_error, True, None)
+    test_util.assertion(ep.match(NLP('No, he is.')).has_error, True, None)
     test_util.result()
