@@ -23,6 +23,7 @@ if __name__ == '__main__':
     errors1.test_what_is_your_name()
     errors1.test_nice_to_meet_you()
     errors1.test_how_are_you()
+    errors1.test_where_are_you_from()
     matching.test_wiring()
     t2g1.test_she_is_a_doctor_match()
     t2g2.test_he_is_a_cook()

@@ -1,6 +1,6 @@
 """Error pattern sets for task 1."""
 import re
-from pattern_match import models
+from pattern_match import models, common_regex
 from util import NLP, test_util
 
 
@@ -70,15 +70,21 @@ def how_are_you(user_input):
 
 
 def where_are_you_from(user_input):
-    raise NotImplementedError()
+    """
+    I am [country].
+    """
+    if re.match('^I am %s(.)?$' % common_regex.NAME, user_input.text):
+        return models.ErrorResult(True, 'You must use "from" in this'
+                                        'sentence.')
+    return models.ErrorResult(False)
 
 
 def how_old_are_you(user_input):
-    raise NotImplementedError()
+    return models.ErrorResult(False)
 
 
 def what_grade_are_you_in(user_input):
-    raise NotImplementedError()
+    return models.ErrorResult(False)
 
 
 """ Testing """
@@ -109,7 +115,16 @@ def test_how_are_you():
 
 
 def test_where_are_you_from():
-    pass
+    test_util.start('Testing errors1.where_are_you_from...')
+    test_util.assertion(
+        where_are_you_from(NLP('I am Taiwan.')).has_error,
+        True,
+        'I am Taiwan')
+    test_util.assertion(
+        where_are_you_from(NLP('I am from Taiwan.')).has_error,
+        False,
+        'I am from Taiwan')
+    test_util.result()
 
 
 def test_how_old_are_you():
