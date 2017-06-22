@@ -10,8 +10,8 @@ def errors(goal_number):
         2: [WrongSubject2(), CapitalizedCook(), WrongJob('cook')],
         3: [CapitalizedMother()],
         4: [CapitalizedFather()],
-        5: [MissingComma()],
-        6: [TooShortAnswer(), WrongJob('nurse')]
+        5: [TooShortAnswer(), MissingComma()],
+        6: [WrongJob('nurse')]
     }
     return lists[goal_number]
 

@@ -101,6 +101,8 @@ logs/
 data/
 stats/
 predictions/
+x.py
+chatbot/
 
 # SSL key
 ssl/
