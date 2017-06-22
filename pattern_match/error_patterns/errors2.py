@@ -6,10 +6,12 @@ from util import test_util, NLP, common
 
 def errors(goal_number):
     lists = {
-        1: [WrongSubject(), CapitalizedDoctor(), WrongJob1()],
-        2: [WrongSubject2(), CapitalizedCook(), WrongJob2()],
+        1: [WrongSubject(), CapitalizedDoctor(), WrongJob('doctor')],
+        2: [WrongSubject2(), CapitalizedCook(), WrongJob('cook')],
         3: [CapitalizedMother()],
-
+        4: [CapitalizedFather()],
+        5: [MissingComma()],
+        6: [TooShortAnswer(), WrongJob('nurse')]
     }
     return lists[goal_number]
 
@@ -49,12 +51,12 @@ class CapitalizedDoctor(models.ErrorPattern):
             return models.ErrorResult(False)
 
 
-class WrongJob1(models.ErrorPattern):
-    def __init__(self):
-        super(WrongJob1, self).__init__()
+class WrongJob(models.ErrorPattern):
+    def __init__(self, expected_job):
+        super(WrongJob, self).__init__()
         # She/He makes this reusable for goal 2
         self.regex = r'(She|He) is a %s(.)?$' % common_regex.JOB
-        self.expected_job = 'doctor'
+        self.expected_job = expected_job
 
     def match(self, user_input):
         match_obj = re.match(self.regex, user_input.text)
@@ -101,12 +103,6 @@ class CapitalizedCook(models.ErrorPattern):
             return models.ErrorResult(False)
 
 
-class WrongJob2(WrongJob1):
-    def __init__(self):
-        super(WrongJob2, self).__init__()
-        self.expected_job = 'cook'
-
-
 # Goal 3
 
 
@@ -118,6 +114,53 @@ class CapitalizedMother(models.ErrorPattern):
         if re.match(r'^My Mother is a %s(.)?$' % common_regex.JOB,
                     user_input.text):
             return models.ErrorResult(True, "Don't use a big 'M' for mother.")
+        else:
+            return models.ErrorResult(False)
+
+
+# Goal 4
+
+
+class CapitalizedFather(models.ErrorPattern):
+    def __init__(self):
+        super(CapitalizedFather).__init__()
+
+    def match(self, user_input):
+        if re.match(r'^My Father is a %s(.)?$' % common_regex.JOB,
+                    user_input.text):
+            return models.ErrorResult(True, "Don't use a big 'F' for father.")
+        else:
+            return models.ErrorResult(False)
+
+
+# Goal 5
+
+
+class MissingComma(models.ErrorPattern):
+    def __init__(self):
+        super(MissingComma, self).__init__()
+        self.regex = r"^No he (is not|isn't)(.)?$"
+
+    def match(self, user_input):
+        if re.match(self.regex, user_input.text):
+            return models.ErrorResult(True, 'You must use a comma "," '
+                                            'after "No"')
+        else:
+            return models.ErrorResult(False)
+
+
+# Goal 6
+
+
+class TooShortAnswer(models.ErrorPattern):
+    def __init__(self):
+        super(TooShortAnswer, self).__init__()
+        self.regex = r"^(A nurse|Nurse)(.)?$"
+
+    def match(self, user_input):
+        if re.match(self.regex, user_input.text):
+            return models.ErrorResult(True, "That's right, but please"
+                                            "give me a full sentence...")
         else:
             return models.ErrorResult(False)
 
@@ -150,7 +193,7 @@ def test_capitalized_doctor():
 
 def test_wrong_job_1():
     test_util.start('Testing WrongJob1...')
-    ep = WrongJob1()
+    ep = WrongJob('doctor')
     test_util.assertion(ep.match(NLP('She is a driver')).has_error,
                         True,
                         'driver')
@@ -188,7 +231,7 @@ def test_capitalized_cook():
 
 def test_wrong_job_2():
     test_util.start('Testing WrongJob2...')
-    ep = WrongJob2()
+    ep = WrongJob('cook')
     test_util.assertion(ep.match(NLP('He is a driver')).has_error,
                         True,
                         'driver')
@@ -212,4 +255,57 @@ def test_capitalized_mother():
         ep.match(NLP('My Mother is a cook')).has_error,
         True,
         'My Mother is a cook')
+    test_util.result()
+
+
+def test_capitalized_father():
+    test_util.start('Testing CapitalizedFather...')
+    ep = CapitalizedFather()
+    test_util.assertion(
+        ep.match(NLP('My father is a cook')).has_error,
+        False,
+        'My father is a cook')
+    test_util.assertion(
+        ep.match(NLP('My Father is a cook')).has_error,
+        True,
+        'My Father is a cook')
+    test_util.result()
+
+
+def test_missing_comma():
+    test_util.start('Testing MissingComma...')
+    ep = MissingComma()
+    test_util.assertion(
+        ep.match(NLP('No he is not.')).has_error, True, 'No he is not')
+    test_util.assertion(
+        ep.match(NLP("No he isn't.")).has_error, True, "No he isn't")
+    test_util.assertion(
+        ep.match(NLP('No, he is not.')).has_error, False, 'No, he is not')
+    test_util.result()
+
+
+def test_too_short_answer():
+    test_util.start('Testing TooShortAnswer...')
+    ep = TooShortAnswer()
+    test_util.assertion(
+        ep.match(NLP('Nurse.')).has_error, True, 'Nurse')
+    test_util.assertion(
+        ep.match(NLP("A nurse")).has_error, True, "A nurse")
+    test_util.assertion(
+        ep.match(NLP('He is a nurse')).has_error, False, 'He is a nurse')
+    test_util.result()
+
+
+def test_wrong_job_3():
+    test_util.start('Testing WrongJob 3...')
+    ep = WrongJob('nurse')
+    test_util.assertion(ep.match(NLP('He is a driver')).has_error,
+                        True,
+                        'driver')
+    test_util.assertion(ep.match(NLP('He is a nurse')).has_error,
+                        False,
+                        'cook')
+    test_util.assertion(ep.match(NLP('He is a teacher')).has_error,
+                        True,
+                        'teacher')
     test_util.result()

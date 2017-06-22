@@ -111,4 +111,34 @@ def test_wiring():
     test_util.assertion(error(2, 3, NLP('My Mother is a cook')).has_error,
                         True,
                         'error 2.3')
+    # 2.4
+    test_util.assertion(match(2, 4, NLP('My father is a cook')),
+                        True,
+                        'match 2.4')
+    test_util.assertion(info(2, 4, NLP('My father is a cook')),
+                        'cook',
+                        'info 2.4')
+    test_util.assertion(error(2, 4, NLP('My Father is a cook')).has_error,
+                        True,
+                        'error 2.4')
+    # 2.5
+    test_util.assertion(match(2, 5, NLP('No, he is not')),
+                        True,
+                        'match 2.5')
+    test_util.assertion(info(2, 5, NLP('No, he is not')),
+                        None,
+                        'info 2.5')
+    test_util.assertion(error(2, 5, NLP('No he is not')).has_error,
+                        True,
+                        'error 2.5')
+    # 2.6
+    test_util.assertion(match(2, 6, NLP('He is a nurse')),
+                        True,
+                        'match 2.6')
+    test_util.assertion(info(2, 6, NLP('He is a nurse')),
+                        None,
+                        'info 2.6')
+    test_util.assertion(error(2, 6, NLP('He is a doctor')).has_error,
+                        True,
+                        'error 2.6')
     test_util.result()

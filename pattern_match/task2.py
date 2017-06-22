@@ -16,10 +16,22 @@ _goal2 = models.Goal(
 _goal3 = models.Goal(
     patterns=patterns.GOAL3,
     error_patterns=errors2.errors(3))
+_goal4 = models.Goal(
+    patterns=patterns.GOAL4,
+    error_patterns=errors2.errors(4))
+_goal5 = models.Goal(
+    patterns=patterns.GOAL5,
+    error_patterns=errors2.errors(5))
+_goal6 = models.Goal(
+    patterns=patterns.GOAL6,
+    error_patterns=errors2.errors(6))
 GOALS = {
     1: _goal1,
     2: _goal2,
-    3: _goal3
+    3: _goal3,
+    4: _goal4,
+    5: _goal5,
+    6: _goal6
 }
 
 
@@ -37,7 +49,7 @@ def goal(goal_number):
     """
     global GOALS
     number_of_goals = 6
-    if goal_number not in range(number_of_goals):
+    if goal_number not in range(number_of_goals + 1):
         raise errors.ValueError(goal_number, 'Integer in the range (1, 6).')
     return GOALS[goal_number]
 
