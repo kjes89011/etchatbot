@@ -4,7 +4,7 @@ from util import common, test_util, NLP
 
 def all_errors():
     return [MissingVerb(), MissingDeterminer(), WrongDeterminer(),
-            PolarityMismatch()]
+            PolarityMismatch(), SentenceStartsLower()]
 
 
 class MissingVerb(models.ErrorPattern):
@@ -96,6 +96,17 @@ class PolarityMismatch(models.ErrorPattern):
         return models.ErrorResult(False)
 
 
+class SentenceStartsLower(models.ErrorPattern):
+    def __init__(self):
+        super(SentenceStartsLower, self).__init__()
+
+    def match(self, user_input):
+        if user_input[0].is_lower:
+            return models.ErrorResult(True, 'A sentence must start with a '
+                                            'big letter.')
+        return models.ErrorResult(False)
+
+
 """ Testing """
 
 
@@ -139,4 +150,15 @@ def test_polarity_mismatch():
     test_util.assertion(ep.match(NLP('No, he is not')).has_error, False, None)
     test_util.assertion(ep.match(NLP("Yes, he isn't")).has_error, True, None)
     test_util.assertion(ep.match(NLP('No, he is.')).has_error, True, None)
+    test_util.result()
+
+
+def test_sentence_starts_lower():
+    test_util.start('Testing SentenceStartsLower...')
+    ep = SentenceStartsLower()
+    test_util.assertion(ep.match(NLP('hi')).has_error, True, 'hi')
+    test_util.assertion(ep.match(NLP('Hi')).has_error, False, 'Hi')
+    test_util.assertion(ep.match(NLP('i am Tim')).has_error, True, 'i am Tim')
+    test_util.assertion(ep.match(
+        NLP('She is a cook')).has_error, False, 'She is a cook')
     test_util.result()

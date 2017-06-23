@@ -41,6 +41,7 @@ if __name__ == '__main__':
     common_errors.test_missing_determiner()
     common_errors.test_wrong_determiner()
     common_errors.test_polarity_mismatch()
+    common_errors.test_sentence_starts_lower()
     errors2.test_wrong_subject()
     errors2.test_capitalized_doctor()
     errors2.test_wrong_job_1()
