@@ -131,6 +131,9 @@ def test_wiring():
     test_util.assertion(error(2, 5, NLP('No he is not')).has_error,
                         True,
                         'error 2.5')
+    test_util.assertion(error(2, 5, NLP('Yes, he is')).has_error,
+                        True,
+                        'error 2.5')
     # 2.6
     test_util.assertion(match(2, 6, NLP('He is a nurse')),
                         True,

@@ -91,7 +91,7 @@ def where_are_you_from(user_input):
     I am [country].
     """
     if re.match('^I am %s(.)?$' % common_regex.NAME, user_input.text):
-        return models.ErrorResult(True, 'You must use "from" in this'
+        return models.ErrorResult(True, 'You must use "from" in this '
                                         'sentence.')
     return models.ErrorResult(False)
 

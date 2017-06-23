@@ -12,9 +12,9 @@ def errors(goal_number):
         2: common_errors.all_errors()
            + [WrongSubject2(), CapitalizedCook(), WrongJob('cook')],
         3: common_errors.all_errors()
-           + [CapitalizedMother()],
+           + [CapitalizedMother(), WrongSubjectIs('She')],
         4: common_errors.all_errors()
-           + [CapitalizedFather()],
+           + [CapitalizedFather(), WrongSubjectIs('He')],
         5: common_errors.all_errors()
            + [TooShortAnswer(), MissingComma(), Yes()],
         6: common_errors.all_errors()
@@ -23,19 +23,34 @@ def errors(goal_number):
     return lists[goal_number]
 
 
+class WrongSubjectIs(models.ErrorPattern):
+    def __init__(self, expected_subject):
+        super(WrongSubjectIs, self).__init__()
+        self.expected_subject = expected_subject
+        subjects = 'I|You|She|It|We|They|This|That|#'
+        wrong_subjects = subjects.replace(expected_subject + '|', '')
+        self.regex = r'^%s (is|am|are)( a|an)? ([a-z]*( [a-z]*)?)(.)?$'
+
+    def match(self, user_input):
+        if re.match(self.regex, user_input.text):
+            return models.ErrorResult(True, 'Wrong subject. Please use %s'
+                                      % self.expected_subject)
+        return models.ErrorResult(False)
+
+
 # Goal 1
 
 class WrongSubject(models.ErrorPattern):
     def __init__(self):
         super(WrongSubject, self).__init__()
-
-    def match(self, user_input):
-        patterns = [
+        self.patterns = [
             r'^He is a doctor(.)?$',
             r'^It is a doctor(.)?$'
         ]
+
+    def match(self, user_input):
         result = False
-        for pattern in patterns:
+        for pattern in self.patterns:
             if re.match(pattern, user_input.text) is not None:
                 result = True
         if result:
@@ -50,9 +65,9 @@ class CapitalizedDoctor(models.ErrorPattern):
 
     def match(self, user_input):
         if re.match(r'^She is a Doctor(.)?$', user_input.text):
-            return models.ErrorResult(True, 'For "doctor" use a small "d".'
-                                            'It is a noun. We only use a big'
-                                            'letter for a name or at the start'
+            return models.ErrorResult(True, 'For "doctor" use a small "d". '
+                                            'It is a noun. We only use a big '
+                                            'letter for a name or at the start '
                                             'of a word.')
         else:
             return models.ErrorResult(False)
@@ -102,9 +117,9 @@ class CapitalizedCook(models.ErrorPattern):
 
     def match(self, user_input):
         if re.match(r'^He is a Cook(.)?$', user_input.text):
-            return models.ErrorResult(True, 'For "cook" use a small "c".'
-                                            'It is a noun. We only use a big'
-                                            'letter for a name or at the start'
+            return models.ErrorResult(True, 'For "cook" use a small "c". '
+                                            'It is a noun. We only use a big '
+                                            'letter for a name or at the start '
                                             'of a word.')
         else:
             return models.ErrorResult(False)
@@ -188,7 +203,7 @@ class TooShortAnswer(models.ErrorPattern):
 
     def match(self, user_input):
         if re.match(self.regex, user_input.text):
-            return models.ErrorResult(True, "That's right, but please"
+            return models.ErrorResult(True, "That's right, but please "
                                             "give me a full sentence...")
         else:
             return models.ErrorResult(False)
@@ -284,6 +299,32 @@ def test_capitalized_mother():
         ep.match(NLP('My Mother is a cook')).has_error,
         True,
         'My Mother is a cook')
+    test_util.result()
+
+
+def test_wrong_subject_is_3():
+    test_util.start('Testing WrongSubjectIs3...')
+    ep = WrongSubjectIs('She')
+    test_util.assertion(
+        ep.match(NLP('He is a nurse')).has_error,
+        True,
+        'He is a nurse')
+    test_util.assertion(
+        ep.match(NLP('It is a nurse')).has_error,
+        True,
+        'It is a nurse')
+    test_util.assertion(
+        ep.match(NLP('This is a nurse')).has_error,
+        True,
+        'This is a nurse')
+    test_util.assertion(
+        ep.match(NLP('That is a nurse')).has_error,
+        True,
+        'That is a nurse')
+    test_util.assertion(
+        ep.match(NLP('She is a nurse')).has_error,
+        False,
+        'She is a nurse')
     test_util.result()
 
 

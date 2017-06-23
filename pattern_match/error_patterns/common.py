@@ -17,7 +17,7 @@ class MissingVerb(models.ErrorPattern):
         # will be captured by the short answer rule where necessary.
         error = len(user_input) > 1 and common.head(user_input).pos_ != 'VERB'
         if error:
-            return models.ErrorResult(True, 'You need to use "is"'
+            return models.ErrorResult(True, 'You need to use "is" '
                                             'in your sentence.')
         return models.ErrorResult(False)
 
@@ -49,22 +49,23 @@ class WrongDeterminer(models.ErrorPattern):
     def match(self, user_input):
         head = common.head(user_input)
         if head.pos_ == 'VERB':
-            next_token = user_input[head.i + 1]
-            if next_token.pos_ == 'DET':
-                noun = user_input[head.i + 2]
-                vowel_at_front = noun.text[0] in common.VOWELS
-                if vowel_at_front and next_token.text == 'a':
-                    return models.ErrorResult(
-                        True,
-                        'If a noun (like "%s") starts with a vowel'
-                        ' (%s), you must use "an".'
-                         % (noun.text, ' '.join(common.VOWELS)))
-                if not vowel_at_front and next_token.text == 'an':
-                    return models.ErrorResult(
-                        True,
-                        'If a noun (like "%s") does not start with a vowel '
-                        '(%s), you must use "a".'
-                        % (noun.text, ' '.join(common.VOWELS)))
+            if len(user_input) > head.i + 1:
+                next_token = user_input[head.i + 1]
+                if next_token.pos_ == 'DET':
+                    noun = user_input[head.i + 2]
+                    vowel_at_front = noun.text[0] in common.VOWELS
+                    if vowel_at_front and next_token.text == 'a':
+                        return models.ErrorResult(
+                            True,
+                            'If a noun (like "%s") starts with a vowel'
+                            ' (%s), you must use "an".'
+                             % (noun.text, ' '.join(common.VOWELS)))
+                    if not vowel_at_front and next_token.text == 'an':
+                        return models.ErrorResult(
+                            True,
+                            'If a noun (like "%s") does not start with a vowel '
+                            '(%s), you must use "a".'
+                            % (noun.text, ' '.join(common.VOWELS)))
         return models.ErrorResult(False)
 
 
