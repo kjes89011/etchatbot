@@ -1,7 +1,7 @@
 """Error pattern sets for task 1."""
 import re
 from pattern_match import models, common_regex
-from util import NLP, test_util
+from util import NLP, test_util, common
 
 
 # error functions return 'Bool, String'
@@ -12,27 +12,44 @@ def what_is_your_name(user_input):
     """
     Error set:
     1: He is Sina.  [wrong subject]
-    2: I am tim.    [Non-capital name]
+    2: invalid name
+    3: I am tim.    [Non-capital name]
     """
     # 1
     incorrect_subjects = ['You', 'He', 'She', 'This']
+    head = next(t for t in user_input if t.head == t)
     if user_input[0].text in incorrect_subjects:
         return models.ErrorResult(
             True, 'You must give me YOUR name. Start with "I"...')
     # 2
-    head = next(t for t in user_input if t.head == t)
+    if user_input.text in common.INVALID_NAMES:
+        return models.ErrorResult(
+                    True,
+                    'That is not a name.')
+    # 3
+    if len(user_input) == 1 and user_input[0].is_lower:
+        return models.ErrorResult(
+            True,
+            'Your name must start with a big letter: '
+            '"Steve" and not "steve".')
     if head.lemma_ == 'be':
         right_children = list(head.rights)
         if len(right_children) >= 1:
-            target = right_children[0]  # first is all we want
-            if target.is_lower:
-                if target.pos_ == 'NOUN':
+            name = right_children[0]  # first is all we want
+            # 2
+            if name.text in common.INVALID_NAMES:
+                return models.ErrorResult(
+                    True,
+                    'That is not a name.')
+            # 3
+            if name.is_lower:
+                if name.pos_ == 'NOUN':
                     return models.ErrorResult(
                         True,
                         'Your name must start with a big letter: '
                         '"Steve" and not "steve".')
-                if target.pos_ == 'ADJ':
-                    temp = NLP(target.text)
+                if name.pos_ == 'ADJ':
+                    temp = NLP(name.text)
                     if temp[0].pos_ == 'NOUN':
                         return models.ErrorResult(
                             True, 'Your name must start with a big letter: '
@@ -95,6 +112,14 @@ def test_what_is_your_name():
     assert not what_is_your_name(NLP('I am Tim')).has_error
     assert what_is_your_name(NLP('I am tim')).has_error
     assert what_is_your_name(NLP('He is Tim')).has_error
+    test_util.assertion(
+        what_is_your_name(NLP('Hi')).has_error, True, 'Hi')
+    test_util.assertion(
+        what_is_your_name(NLP('hi')).has_error, True, 'hi')
+    test_util.assertion(
+        what_is_your_name(NLP('Tim')).has_error, False, 'Tim')
+    test_util.assertion(
+        what_is_your_name(NLP('tim')).has_error, True, 'tim')
     test_util.result()
 
 
