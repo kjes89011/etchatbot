@@ -64,6 +64,9 @@ DIGITS = list(TEXT_TO_DIGIT.keys())
 TEENS = list(TEXT_TO_TEEN.keys())
 TENS = list(TEXT_TO_TENS.keys())
 LONE_NUMBERS = DIGITS + TEENS + TENS
+INVALID_NAMES = [
+    'Hi', 'hi'
+]
 
 
 def age_bracket(age):

@@ -1,7 +1,7 @@
 """Matching input patterns for Task 1."""
 import re
 from pattern_match import common_regex, models
-from util import pos, test_util, NLP, errors
+from util import pos, test_util, NLP, errors, common
 from pattern_match.patterns.task1 import goal1, goal2
 from pattern_match.error_patterns import errors1
 
@@ -125,8 +125,9 @@ def match_name(user_input):
     for r in regexs:
         pattern_match = re.match(r, user_input.text)
         if pattern_match:
-            match = True
             info = pattern_match.group('name')
+            if info not in common.INVALID_NAMES:
+                match = True
     return models.Match(user_input, match, info)
 
 
@@ -348,6 +349,8 @@ def test_match_name():
     non_matches = [
         NLP('What is your name?'),   # far out
         NLP('My name is tim.'),      # missing capital
+        NLP('Hi'),
+        NLP('hi'),
         NLP('My nome it Tim')]      # spelling mistakes
     test_util.test_matches(matches, non_matches, match_name)
 
