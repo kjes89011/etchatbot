@@ -27,18 +27,19 @@ class MissingDeterminer(models.ErrorPattern):
         super(MissingDeterminer, self).__init__()
 
     def match(self, user_input):
-        # looking for VERB NOUN with no DET in there.
         head = common.head(user_input)
         if head.pos_ == 'VERB':
             if len(user_input) > head.i + 1:
                 next_token = user_input[head.i + 1]
                 if head.lemma_ == 'be' and next_token.pos_ == 'NOUN':
-                    return models.ErrorResult(True, 'You must use "a" or "an"'
-                                                    ' before a noun like "%s"'
-                                                    % next_token.text)
+                    return models.ErrorResult(
+                        True,
+                        'You must use "a" or "an" before a noun like "%s"'
+                        % next_token.text)
                 if head.lemma_ == 'have' and next_token.pos_ == 'ADJ':
-                    return models.ErrorResult(True, 'You must use "a" or "an"'
-                                                    ' before a noun.')
+                    return models.ErrorResult(
+                        True,
+                        'You must use "a" or "an" before a noun.')
         return models.ErrorResult(False)
 
 
