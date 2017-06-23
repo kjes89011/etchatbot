@@ -186,16 +186,19 @@ def match_how_are_you_response(user_input):
     Returns:
       models.Match object.
     """
-    r = r"^(I'm |I am )?" \
+    match = False
+    info = None
+    r1 = r"^(I'm |I am )?" \
         r"(very |not )?" \
         r"(?P<state>([A-Z]{1}[a-z]*)|[a-z-]*)" \
         r"(, thank you|, thanks)?(.)?$"
-    match = False
-    info = None
-    pattern_match = re.match(r, user_input.text)
-    if pattern_match is not None:
-        modifier = pattern_match.group(2)
-        state = pattern_match.group(3)
+    r2 = r'^I have (?P<state>(a cold|the flu))(.)?$'
+    cold_flu = ['a cold', 'the flu']
+    pattern_match1 = re.match(r1, user_input.text)
+    pattern_match2 = re.match(r2, user_input.text)
+    if pattern_match1:
+        modifier = pattern_match1.group(2)
+        state = pattern_match1.group(3)
         # state should be an adjective
         info_tok = NLP(state)[0]
         if info_tok.tag_ in pos.ADJECTIVES:
@@ -203,6 +206,11 @@ def match_how_are_you_response(user_input):
             info = state
             if modifier:
                 info = modifier + state
+    elif pattern_match2:
+        state = pattern_match2.group(1)
+        if state in cold_flu:
+            match = True
+            info = state
     return models.Match(user_input, match, info)
 
 
@@ -362,11 +370,14 @@ def test_match_how_are_you_response():
         (NLP('Healthy, thank you.'), 'Healthy'),
         (NLP('I am not good'), 'not good'),
         (NLP('I am very happy'), 'very happy'),
+        (NLP('I have a cold'), 'a cold'),
+        (NLP('I have the flu'), 'the flu'),
         (NLP('I am happy, thanks.'), 'happy')]
     non_matches = [
-        NLP('I am banana, thank you.'),                        # not an adj.
-        NLP('I am fine thank you.'),                           # no comma
-        NLP('I am a small village near the sea, thank you.')]  # loco
+        NLP('I am banana, thank you.'),
+        NLP('I am fine thank you.'),
+        NLP('I am a small village near the sea, thank you.'),
+        NLP('I have a toy')]
     test_util.test_matches(matches, non_matches, match_how_are_you_response)
 
 

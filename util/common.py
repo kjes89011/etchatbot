@@ -21,10 +21,10 @@ NEGATIONS = [
     'not', "n't"
 ]
 AGE_BRACKETS = {
-    1: lambda age: age < 6,
-    2: lambda age: 6 <= age <= 30,
-    3: lambda age: 31 <= age <= 50,
-    4: lambda age: 51 <= age <= 99
+    0: lambda age: age < 6,
+    1: lambda age: 6 <= age <= 30,
+    2: lambda age: 31 <= age <= 50,
+    3: lambda age: 51 <= age <= 99
 }
 TEXT_TO_DIGIT = {
     'one': 1,
@@ -141,35 +141,35 @@ def test_age_bracket():
     test_util.start('Testing age_bracket...')
     test_util.assertion(
         age_bracket('5'),
-        1,
+        0,
         '5')
     test_util.assertion(
         age_bracket('five'),
-        1,
+        0,
         'five')
     test_util.assertion(
         age_bracket('7'),
-        2,
+        1,
         '7')
     test_util.assertion(
         age_bracket('seven'),
-        2,
+        1,
         'seven')
     test_util.assertion(
         age_bracket('31'),
-        3,
+        2,
         '31')
     test_util.assertion(
         age_bracket('thirty-one'),
-        3,
+        2,
         'thirty-one')
     test_util.assertion(
         age_bracket('51'),
-        4,
+        3,
         '51')
     test_util.assertion(
         age_bracket('fifty-one'),
-        4,
+        3,
         'fifty-one')
     test_util.result()
 
