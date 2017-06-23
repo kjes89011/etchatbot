@@ -68,7 +68,7 @@ class CapitalizedDoctor(models.ErrorPattern):
             return models.ErrorResult(True, 'For "doctor" use a small "d". '
                                             'It is a noun. We only use a big '
                                             'letter for a name or at the start '
-                                            'of a word.')
+                                            'of a sentence.')
         else:
             return models.ErrorResult(False)
 
@@ -120,7 +120,7 @@ class CapitalizedCook(models.ErrorPattern):
             return models.ErrorResult(True, 'For "cook" use a small "c". '
                                             'It is a noun. We only use a big '
                                             'letter for a name or at the start '
-                                            'of a word.')
+                                            'of a sentence.')
         else:
             return models.ErrorResult(False)
 
