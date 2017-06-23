@@ -30,14 +30,15 @@ class MissingDeterminer(models.ErrorPattern):
         # looking for VERB NOUN with no DET in there.
         head = common.head(user_input)
         if head.pos_ == 'VERB':
-            next_token = user_input[head.i + 1]
-            if head.lemma_ == 'be' and next_token.pos_ == 'NOUN':
-                return models.ErrorResult(True, 'You must use "a" or "an"'
-                                                ' before a noun like "%s"'
-                                                % next_token.text)
-            if head.lemma_ == 'have' and next_token.pos_ == 'ADJ':
-                return models.ErrorResult(True, 'You must use "a" or "an"'
-                                                ' before a noun.')
+            if len(user_input) > head.i + 1:
+                next_token = user_input[head.i + 1]
+                if head.lemma_ == 'be' and next_token.pos_ == 'NOUN':
+                    return models.ErrorResult(True, 'You must use "a" or "an"'
+                                                    ' before a noun like "%s"'
+                                                    % next_token.text)
+                if head.lemma_ == 'have' and next_token.pos_ == 'ADJ':
+                    return models.ErrorResult(True, 'You must use "a" or "an"'
+                                                    ' before a noun.')
         return models.ErrorResult(False)
 
 
@@ -116,6 +117,7 @@ def test_missing_determiner():
                         True,
                         'I have cold')
     test_util.assertion(ep.match(NLP('He is a doctor')).has_error, False, None)
+    test_util.assertion(ep.match(NLP('Yes, he is')).has_error, False, None)
     test_util.result()
 
 

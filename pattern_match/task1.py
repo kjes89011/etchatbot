@@ -371,6 +371,7 @@ def test_match_how_are_you_response():
         (NLP('I am not good'), 'not good'),
         (NLP('I am very happy'), 'very happy'),
         (NLP('I have a cold'), 'a cold'),
+        (NLP('I have a cold.'), 'a cold'),
         (NLP('I have the flu'), 'the flu'),
         (NLP('I am happy, thanks.'), 'happy')]
     non_matches = [
