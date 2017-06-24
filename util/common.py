@@ -9,13 +9,13 @@ JOBS = [
 ]
 POSITIVE_STATES = [
     'happy', 'good', 'fine', 'healthy', 'super',
-    'great',
+    'great', 'very OK',
 ]
 NEUTRAL_STATES = [
     'so so', 'OK',
 ]
 NEGATIVE_STATES = [
-    'bad', 'sad', 'unhappy', 'angry', 'tired', 'bored',
+    'bad', 'sad', 'unhappy', 'angry', 'tired', 'bored', 'very so so'
 ]
 GENERIC_QUESTION_BACKS = [
     'Any you?', 'And yours?'
