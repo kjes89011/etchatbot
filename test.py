@@ -13,6 +13,7 @@ from pattern_match.patterns.task2 import goal6 as t2g6
 if __name__ == '__main__':
     common.test_age_bracket()
     common.test_state_is_positive()
+    common.test_state_polarity()
     common.test_text_to_number()
     common.test_well_formed_number()
     common_regex.test_name()

@@ -9,7 +9,13 @@ JOBS = [
 ]
 POSITIVE_STATES = [
     'happy', 'good', 'fine', 'healthy', 'super',
-    'great', 'OK'
+    'great',
+]
+NEUTRAL_STATES = [
+    'so so', 'OK',
+]
+NEGATIVE_STATES = [
+    'bad', 'sad', 'unhappy', 'angry', 'tired', 'bored',
 ]
 GENERIC_QUESTION_BACKS = [
     'Any you?', 'And yours?'
@@ -65,7 +71,7 @@ TEENS = list(TEXT_TO_TEEN.keys())
 TENS = list(TEXT_TO_TENS.keys())
 LONE_NUMBERS = DIGITS + TEENS + TENS
 INVALID_NAMES = [
-    'Hi', 'hi'
+    'Hi', 'hi', 'What', 'what', 'Hello', 'hello'
 ]
 
 
@@ -87,6 +93,18 @@ def head(spacy_doc):
 def info(spacy_doc):
     for t in spacy_doc:
         print('%s\t%s\t%s' % (t.text, t.pos_, t.tag_))
+
+
+def state_polarity(state):
+    """Returns 0=negative, 1=neutral, 2=positive"""
+    if state in POSITIVE_STATES \
+        or state.replace('very ', '') in POSITIVE_STATES:
+        return 2
+    elif state in NEGATIVE_STATES \
+        or state.replace('very ', '') in NEGATIVE_STATES:
+        return 0
+    else:
+        return 1
 
 
 def state_is_positive(state):
@@ -193,8 +211,25 @@ def test_state_is_positive():
         'sad')
     test_util.assertion(
         state_is_positive('OK'),
-        True,
+        False,
         'OK')
+    test_util.result()
+
+
+def test_state_polarity():
+    test_util.start('Testing state_polarity...')
+    test_util.assertion(
+        state_polarity('happy'),
+        2,
+        'happy')
+    test_util.assertion(
+        state_polarity('so so'),
+        1,
+        'so so')
+    test_util.assertion(
+        state_polarity('sad'),
+        0,
+        'sad')
     test_util.result()
 
 
