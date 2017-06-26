@@ -212,6 +212,15 @@ def match_how_are_you_response(user_input):
         if state in cold_flu:
             match = True
             info = state
+    # if we don't have a match thus far...
+    if not match:
+        # try some more complicated methods
+        head = common.head(user_input)
+        acceptable_head_lemmas = ['be', 'have']
+        # check the subject is 'I'
+        if 'I' in [t.text for t in head.lefts]:
+            # check the object for a match
+            pass
     return models.Match(user_input, match, info)
 
 

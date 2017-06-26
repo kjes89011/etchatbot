@@ -21,8 +21,12 @@ BOT_SHOTS = np.zeros((4, 4), 'int32')
 USR_SHOTS = np.zeros((4, 4), 'int32')
 
 
-class Orientation:
-    Up, Right, Down, Left = np.arange(4)
+ORIENTATIONS = {
+    0: 'up',
+    1: 'right',
+    2: 'down',
+    3: 'left'
+}
 
 
 def init():
@@ -43,5 +47,14 @@ def place_ship(board, length):
     If all orientations fail, randomly pick another square.
     """
     square = np.argmax(np.random.rand(16))
+    orientations_tried = []
     while True:
-        # convert the number to a square in the matrix
+        coords = transform_random_int_to_matrix_coords(square)
+        # randomly pick an orientation
+        # need to loop through the orientations as well...
+        orientation = np.argmax(np.random.rand(4))
+
+
+def transform_random_int_to_matrix_coords(r):
+    return int(np.floor(r/4), r % 4)
+

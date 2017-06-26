@@ -1,4 +1,4 @@
-"""Patterns for Task 1 Goal 2."""
+"""Patterns for Task 2 Goal 2."""
 from pattern_match import models
 import re
 from util import NLP, test_util
