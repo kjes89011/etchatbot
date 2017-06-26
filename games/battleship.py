@@ -44,4 +44,4 @@ def place_ship(board, length):
     """
     square = np.argmax(np.random.rand(16))
     while True:
-
+        # convert the number to a square in the matrix
