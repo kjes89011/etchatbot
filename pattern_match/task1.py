@@ -212,16 +212,62 @@ def match_how_are_you_response(user_input):
         if state in cold_flu:
             match = True
             info = state
-    # if we don't have a match thus far...
+    # if we don't have a match thus far... try some more complicated methods.
     if not match:
-        # try some more complicated methods
-        head = common.head(user_input)
-        acceptable_head_lemmas = ['be', 'have']
-        # check the subject is 'I'
-        if 'I' in [t.text for t in head.lefts]:
-            # check the object for a match
-            pass
+        match, info = how_are_you_dep_match(user_input)
+    # NOTE: these nested if blocks suck. Wrap these as subfunctions and
+    #       return for failing conditions. Cleaner that way...
     return models.Match(user_input, match, info)
+
+
+def how_are_you_dep_match(user_input):
+    """Use dependency parsing to match How are you? response.
+
+    Strategy:
+    1) Get the head. It's lemma should be a verb in the list of acceptable
+       verbs: ['be', 'have', 'feel'].
+    2) Make sure the subject is correct: 'I' should be in position [0].
+    3) Check and take account of negative verb modifier: e.g. "don't feel".
+    4) Check the object is permissable. This will depend on the verb:
+        * be: expect an adjective
+            -> potential modifiers: very, not, etc.
+        * feel: expect and adjective
+            -> potential modifiers: very (not on this side should be an error -
+               "Use don't feel instead of not here."
+        * have: expect a determiner followed by a noun.
+
+    For the adjectives and nouns extracted from the above, the best method
+    would be to have something like a dictionary to work off. But we just use
+    short and not at all comprehensive lists for now.
+
+    Args:
+      user_input: SpaCy doc of user input.
+
+    Returns:
+      Boolean, String: match_found, info.
+    """
+    head = common.head(user_input)
+    # 1
+    if head.lemma_ not in ['be', 'have', 'feel']:
+        return False, None
+    # 2
+    if user_input[0].text != 'I':
+        return False, None
+    # 3
+    negative_verb = user_input[head.i - 1].text in ["n't", 'not']
+    # 4
+    if head.lemma_ == 'be':
+        if 'ADJ' in [l.pos_ for l in head.lefts]:
+            return True, ' '.join([l.text for l in head.lefts])
+    elif head.lemma_ == 'feel':
+        if 'ADJ' in [l.pos_ for l in head.lefts]:
+            return True, ' '.join([l.text for l in head.lefts])
+    else:  # the lemma is have
+        if 'NOUN' in [l.pos_ for l in head.lefts] and \
+                'DET' in [l.pos_ for l in head.lefts]:
+            return True, '%s' % ("don't" if negative_verb else '') \
+                   + ' '.join([l.text for l in head.lefts])
+    return False, None
 
 
 def match_where_are_you_from_response(user_input):
