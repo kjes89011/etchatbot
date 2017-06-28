@@ -114,6 +114,7 @@ def state_is_positive(state):
 
 
 def text_to_number(text):
+    text = text.lower()
     if not well_formed_number(text):
         raise Exception('Not a well-formed number: %s' % text)
     if '-' not in text:
@@ -319,6 +320,10 @@ def test_text_to_number():
         text_to_number('twenty-one'),
         21,
         'twenty-one')
+    test_util.assertion(
+        text_to_number('Twenty-one'),
+        21,
+        'Twenty-one')
     test_util.result()
 
 
